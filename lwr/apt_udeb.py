@@ -148,26 +148,31 @@ class AptUdebDownloader(object):
                 continue
             except apt.package.FetchError as exc:
                 raise cliapp.AppException('Unable to fetch %s: %s' % (pkg_name, exc))
-        # FIXME: still need a Packages file and Release.
-        # Horribe hardcoded mess --------------------------------------
-        packages = check_output(['apt-ftparchive', '-o', 'Packages::Extensions=.udeb', 'packages', os.path.join(self.destdir, '..', 'pool', 'main')])
-	meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
-						 self.codename,
+
+        # Generate Packages file etc. for installer udebs
+        current_dir=os.getcwd()
+        os.chdir(os.path.join(self.destdir, '..'))
+        packages = check_output(['apt-ftparchive', '-o', 'Packages::Extensions=.udeb',
+                                 'packages', os.path.join('pool', 'main')])
+        meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
+                                                 self.codename,
                                                  'main',
                                                  'debian-installer',
-                                                 'binary-%s' % (self.architecture,)
-                                                ))
+                                                 'binary-%s' % (self.architecture,)))
         if not os.path.exists(meta_dir):
             os.makedirs(meta_dir)
-        packages = re.sub(r"/tmp.*pool", "pool", packages)
         with open(os.path.join(meta_dir, 'Packages'), 'w') as pkgout:
             pkgout.write(packages)
-        # More mess, this time for debs
-        packages = check_output(['apt-ftparchive', '-o', 'Packages::Extensions=.deb', 'packages', os.path.join(self.destdir, '..', 'pool', 'main')])
-        meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists', self.codename, 'main', 'binary-%s' % (self.architecture,)))
+
+        # Generate Packages file etc. for normal debs
+        packages = check_output(['apt-ftparchive', '-o', 'Packages::Extensions=.deb',
+                                 'packages', os.path.join('pool', 'main')])
+        meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
+                                                 self.codename,
+                                                 'main',
+                                                 'binary-%s' % (self.architecture,)))
         if not os.path.exists(meta_dir):
             os.makedirs(meta_dir)
-        packages = re.sub(r"/tmp.*pool", "pool", packages)
         with open(os.path.join(meta_dir, 'Packages'), 'w') as pkgout:
             pkgout.write(packages)
         release = check_output([
@@ -182,7 +187,7 @@ class AptUdebDownloader(object):
         with open(os.path.join(self.destdir, '..', 'dists', self.codename, 'Release'), 'w') as relout: 
             relout.write(release)
         logging.info("Release file generated for CD-ROM pool.")
-        # End mess ----------------------------------------------------
+        os.chdir(current_dir)
 
     def clean_up_apt(self):
         for clean in self.dirlist:
