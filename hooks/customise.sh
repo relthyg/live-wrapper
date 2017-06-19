@@ -28,6 +28,22 @@ chroot ${rootdir} apt-get -q -y install initramfs-tools live-boot live-config ${
 # Temporary fix for #843983
 chroot ${rootdir} chmod 755 /
 
+# Find all the packages included
+export COLUMNS=500
+chroot ${rootdir} dpkg -l | awk '/^ii/ {printf "%s %s\n",$2,$3}' > packages.list
+
+# Grab source URLs for all the packages
+cat > ${rootdir}//list-sources <<EOF
+#!/bin/sh
+export COLUMNS=500
+for PKG in \$(dpkg -l | awk '/^ii/ {printf "%s ",\$2}'); do
+    apt-get source -qq --print-uris \$PKG
+done
+EOF
+chmod +x ${rootdir}/list-sources
+chroot ${rootdir} /list-sources > sources.list
+rm -f ${rootdir}/list-sources
+
 echo "blacklist bochs-drm" > $rootdir/etc/modprobe.d/qemu-blacklist.conf
 
 replace_apt_source
