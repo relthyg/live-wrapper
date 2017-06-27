@@ -120,14 +120,14 @@ class AptUdebDownloader(object):
     def download_udebs(self, exclude_list):
         if not self.cache:
             raise cliapp.AppException('No cache available.')
-        main_pool = os.path.join(self.destdir, '..', 'pool', 'main')
-        os.makedirs(main_pool)
+        # HACK HACK HACK
+        #
+        # Setting up a separate pool for udebs, as apt-ftparchive
+        # isn't generating separate Packages files
+        main_pool = os.path.join(self.destdir, '..', 'udeb', 'pool', 'main')
+        if not os.path.exists(main_pool):
+            os.makedirs(main_pool)
         for pkg_name in self.cache.keys():
-            prefix = pkg_name[0]
-            # destdir is just a base, needs pool/main/[index]/[name]
-            if pkg_name[:3] == 'lib':
-                prefix = pkg_name[:4]
-            pkg_dir = os.path.join(main_pool, prefix, pkg_name)
             if pkg_name in exclude_list:
                 continue
             pkg = self.cache[pkg_name]
@@ -141,7 +141,13 @@ class AptUdebDownloader(object):
                 version = pkg.versions[0]
             if not version.uri:
                 continue
-            os.makedirs(pkg_dir)
+            prefix = version.source_name[0]
+            # destdir is just a base, needs pool/main/[index]/[name]
+            if version.source_name[:3] == 'lib':
+                prefix = version.source_name[:4]
+            pkg_dir = os.path.join(main_pool, prefix, version.source_name)
+            if not os.path.exists(pkg_dir):
+                os.makedirs(pkg_dir)
             try:
                 version.fetch_binary(destdir=pkg_dir)
             except TypeError as exc:
