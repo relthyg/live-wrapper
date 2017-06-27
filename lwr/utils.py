@@ -12,6 +12,8 @@ suites, architectures or other variants.
 import urlparse
 import requests
 import cliapp
+import os
+import shutil
 
 KERNEL = 'vmlinuz'
 RAMDISK = 'initrd.gz'
@@ -59,3 +61,16 @@ def cdrom_image_url(mirror, suite, architecture, gtk=False, daily=False):
     check_url(kernel)
     check_url(ramdisk)
     return (base_url, kernel, ramdisk, cd_info)
+
+def copytree(source, target):
+    if not os.path.exists(target):
+        os.makedirs(target)
+        shutil.copystat(source, target)
+    entries = os.listdir(source)
+    for entry in entries:
+        src = os.path.join(source, entry)
+        tgt = os.path.join(target, item)
+        if os.path.isdir(src):
+            copytree(src, tgt)
+        else:
+            shutil.copy2(src, tgt)
