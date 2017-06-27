@@ -27,7 +27,7 @@ from lwr.disk import install_disk_info
 from lwr.disk import get_default_description
 from lwr.grub import install_grub
 from lwr.xorriso import Xorriso
-from lwr.apt_udeb import AptUdebDownloader
+from lwr.apt_udeb import AptUdebDownloader, get_apt_handler
 from lwr.utils import cdrom_image_url, KERNEL, RAMDISK
 from lwr.cdroot import CDRoot
 
@@ -61,11 +61,16 @@ class LiveWrapper(cliapp.Application):
             metavar='MIRROR',
             group='Base Settings',
             default='http://deb.debian.org/debian/')
-         self.settings.string(
+        self.settings.string(
             ['apt-mirror'], 'Mirror to configure in the built image (default: %default)',
             metavar='APT-MIRROR',
             group='Base Settings',
             default='http://deb.debian.org/debian/')
+        self.settings.string(
+            ['volume_id'], 'Volume ID for the image (default: %default)',
+            metavar='VOLID',
+            group='Base Settings',
+            default='DEBIAN LIVE')
         self.settings.string(
 	    ['description'], 'Description for the image to be created. A '
 			     'description will be automatically generated based '
@@ -74,11 +79,6 @@ class LiveWrapper(cliapp.Application):
             metavar='DESCRIPTION',
             group='Base Settings',
             default=None)
-        self.settings.string(
-            ['volume_id'], 'Volume ID for the image (default: %default)',
-            metavar='VOLID',
-            group='Base Settings',
-            default='DEBIAN LIVE')
         self.settings.string(
             ['t', 'tasks'], 'Task packages to install',
             metavar='"task-TASK1 task-TASK2 ..."',
@@ -89,6 +89,10 @@ class LiveWrapper(cliapp.Application):
             group='Packages')
         self.settings.string(
             ['f', 'firmware'], 'Firmware packages to install',
+            metavar='"PKG1 PKG2 ..."',
+            group='Packages')
+        self.settings.string(
+            ['base_debs'], 'Base packages for the installer',
             metavar='"PKG1 PKG2 ..."',
             group='Packages')
         self.settings.boolean(
@@ -215,6 +219,7 @@ class LiveWrapper(cliapp.Application):
         os.environ['LWR_TASK_PACKAGES'] = self.settings['tasks']
         os.environ['LWR_EXTRA_PACKAGES'] = self.settings['extra']
         os.environ['LWR_FIRMWARE_PACKAGES'] = self.settings['firmware']
+        os.environ['LWR_BASE_DEBS'] = self.settings['base_debs']
 
         for envvar in os.environ.keys():
             if envvar.startswith('LWR_'):
@@ -268,10 +273,38 @@ class LiveWrapper(cliapp.Application):
 
             # download all udebs in the suite, except exclude_list
             apt_udeb.download_udebs(exclude_list)
-            # FIXME: generate a Release file
+
+            # Now we've downloaded all the d-i bits we need, clean up the metadata we used
             apt_udeb.clean_up_apt()
             print("... completed udeb downloads")
             logging.info("... completed udeb downloads")
+
+            # download the basic debs needed - bootloaders and tools they depend on
+            if os.path.exists('base_debs.list'):
+                pkg_list = []
+                with open('base_debs.list', 'r') as f:
+                    for line in f.readlines():
+                        pkg_list.append(line.rstrip())
+                di_root = self.cdroot['d-i'].path
+                handler = get_apt_handler(di_root,
+                                          self.settings['mirror'],
+                                          self.settings['distribution'],
+                                          self.settings['architecture'])
+                handler.download_base_debs(pkg_list)
+                handler.clean_up_apt()
+                apt_udeb.download_base_debs(exclude_list)
+
+                print("... completed deb downloads")
+                logging.info("... completed deb downloads")
+
+            # Generate Packages and Release files for the udebs and downloaded debs
+            apt_udeb.generate_packages_file('udeb')
+            apt_udeb.generate_packages_file('deb')
+            apt_udeb.merge_pools(['deb', 'udeb'])
+            apt_udeb.generate_release_file()
+
+            print("... completed generating metadata files")
+            logging.info("... completed generating metadata files")
 
         # Download the firmware debs if desired
         if len(self.settings['firmware']) > 0:

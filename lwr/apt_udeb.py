@@ -15,6 +15,7 @@ import logging
 import apt
 import apt_pkg
 import cliapp
+from lwr.utils import copytree
 from vmdebootstrap.base import copy_files, runcmd
 from subprocess import check_output
 import distro_info
@@ -155,32 +156,73 @@ class AptUdebDownloader(object):
             except apt.package.FetchError as exc:
                 raise cliapp.AppException('Unable to fetch %s: %s' % (pkg_name, exc))
 
-        # Generate Packages file etc. for installer udebs
-        current_dir=os.getcwd()
-        os.chdir(os.path.join(self.destdir, '..'))
-        packages = check_output(['apt-ftparchive', '-o', 'Packages::Extensions=.udeb',
-                                 'packages', os.path.join('pool', 'main')])
-        meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
-                                                 self.codename,
-                                                 'main',
-                                                 'debian-installer',
-                                                 'binary-%s' % (self.architecture,)))
-        if not os.path.exists(meta_dir):
-            os.makedirs(meta_dir)
-        with open(os.path.join(meta_dir, 'Packages'), 'w') as pkgout:
-            pkgout.write(packages)
+    def download_base_debs(self, pkg_list):
+        if not self.cache:
+            raise cliapp.AppException('No cache available.')
+        # HACK HACK HACK
+        #
+        # Setting up a separate pool for debs, as apt-ftparchive
+        # isn't generating separate Packages files
+        main_pool = os.path.join(self.destdir, '..', 'deb', 'pool', 'main')
+        if not os.path.exists(main_pool):
+            os.makedirs(main_pool)
+        for pkg_name in pkg_list:
+            pkg = self.cache[pkg_name]
+            if not hasattr(pkg, 'versions'):
+                continue
+            if len(pkg.versions) > 1:
+                pkg.version_list.sort(apt_pkg.version_compare) # pylint: disable=no-member
+                version = pkg.version_list[0]
+                print("Multiple versions returned for %s - using newest: %s" % (pkg_name, pkg.version_list[0]))
+            else:
+                version = pkg.versions[0]
+            if not version.uri:
+                continue
+            prefix = version.source_name[0]
+            # destdir is just a base, needs pool/main/[index]/[name]
+            if version.source_name[:3] == 'lib':
+                prefix = version.source_name[:4]
+            pkg_dir = os.path.join(main_pool, prefix, version.source_name)
+            if not os.path.exists(pkg_dir):
+                os.makedirs(pkg_dir)
+            try:
+                version.fetch_binary(destdir=pkg_dir)
+            except TypeError as exc:
+                continue
+            except apt.package.FetchError as exc:
+                raise cliapp.AppException('Unable to fetch %s: %s' % (pkg_name, exc))
 
-        # Generate Packages file etc. for normal debs
-        packages = check_output(['apt-ftparchive', '-o', 'Packages::Extensions=.deb',
-                                 'packages', os.path.join('pool', 'main')])
-        meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
-                                                 self.codename,
+    def generate_packages_file(self, style='udeb'):
+	meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
+						 self.codename,
                                                  'main',
                                                  'binary-%s' % (self.architecture,)))
+        if style == 'udeb':
+            meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
+                                                     self.codename,
+                                                     'main',
+                                                     'debian-installer',
+                                                     'binary-%s' % (self.architecture,)))
+
+        current_dir=os.getcwd()
+        os.chdir(os.path.join(self.destdir, '..', style))
+        packages = check_output(['apt-ftparchive', '-o', 'Default::Packages::Extensions=.%s' %style,
+                                 'packages', os.path.join('pool', 'main')])
         if not os.path.exists(meta_dir):
             os.makedirs(meta_dir)
         with open(os.path.join(meta_dir, 'Packages'), 'w') as pkgout:
             pkgout.write(packages)
+        os.chdir(current_dir)
+
+    # HACK HACK HACK
+    # Move all the separate trees of debs, udebs and Packages files into the right place
+    def merge_pools(self, sources):
+        for source in sources:
+            copytree(os.path.join(self.destdir, '..', source, 'pool'),
+                     os.path.join(self.destdir, '..', 'pool'))
+            shutil.rmtree(os.path.join(self.destdir, '..', source))
+
+    def generate_release_file(self):
         release = check_output([
                 'apt-ftparchive',
                 '-o', 'APT::FTPArchive::Release::Origin=Debian',
@@ -193,7 +235,7 @@ class AptUdebDownloader(object):
         with open(os.path.join(self.destdir, '..', 'dists', self.codename, 'Release'), 'w') as relout: 
             relout.write(release)
         logging.info("Release file generated for CD-ROM pool.")
-        os.chdir(current_dir)
+        # End mess ----------------------------------------------------
 
     def clean_up_apt(self):
         for clean in self.dirlist:
