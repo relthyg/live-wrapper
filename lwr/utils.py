@@ -69,7 +69,7 @@ def copytree(source, target):
     entries = os.listdir(source)
     for entry in entries:
         src = os.path.join(source, entry)
-        tgt = os.path.join(target, item)
+        tgt = os.path.join(target, entry)
         if os.path.isdir(src):
             copytree(src, tgt)
         else:
