@@ -44,7 +44,7 @@ class LiveWrapper(cliapp.Application):
 
 
     def add_settings(self):
-        default_arch = subprocess.check_output(["dpkg", "--print-architecture"]).decode('utf-8').strip()
+        default_arch = subprocess.check_output(["dpkg", "--print-architecture"]).strip()
         self.settings.string(
             ['o', 'image_output'], 'Location for built image',
             metavar='/PATH/TO/FILE.ISO',

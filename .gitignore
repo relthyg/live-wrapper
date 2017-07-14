@@ -1,6 +1,0 @@
-*.pyc
-*.swp
-doc/_build
-*.log
-local
-live_wrapper.egg-info

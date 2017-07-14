@@ -1,9 +1,21 @@
-live-wrapper (0.6+nmu1) UNRELEASED; urgency=medium
+live-wrapper (0.6+nmu2) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Remove incorrect instance of converting to UTF-8.
+  * Eliminate 'pyversions' warnings at build time.
+  * Add 'python-requests' build dependency. Fixes docs build.
+  * Add 'squashfs-tools' dependency. (Closes: #867282).
+
+ -- Phil Wyett <philwyett@kathenas.org>  Fri, 14 Jul 2017 04:43:06 +0100
+
+live-wrapper (0.6+nmu1) unstable; urgency=medium
 
   * Non-maintainer upload.
   * Add a dependency on python-pycurl, needed by lwr (closes: #861994)
+  * Add Build-Depends: python-apt, python-cliapp, vmdebootstrap needed to
+    completely build the lwr autodoc
 
- -- Florian Schlichting <fsfs@debian.org>  Tue, 16 May 2017 23:06:46 +0200
+ -- Florian Schlichting <fsfs@debian.org>  Tue, 16 May 2017 23:31:36 +0200
 
 live-wrapper (0.6) unstable; urgency=medium
 
