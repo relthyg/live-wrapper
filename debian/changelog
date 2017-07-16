@@ -1,3 +1,10 @@
+live-wrapper (0.6+nmu1) UNRELEASED; urgency=medium
+
+  * Non-maintainer upload.
+  * Add a dependency on python-pycurl, needed by lwr (closes: #861994)
+
+ -- Florian Schlichting <fsfs@debian.org>  Tue, 16 May 2017 23:06:46 +0200
+
 live-wrapper (0.6) unstable; urgency=medium
 
   [ Ana C. Custura ]

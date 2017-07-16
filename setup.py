@@ -41,6 +41,7 @@ setup(
         'cliapp >= 1.20150829',
         'vmdebootstrap',
         'requests',
+        'pycurl',
         'python-apt'
     ],
     entry_points={
