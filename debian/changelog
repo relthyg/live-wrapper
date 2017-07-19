@@ -9,7 +9,9 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
   * Add command-line config for addition of firmware packages, and update
     the docs about Customising Packages
   * In the standard customise script, generate lists of the packages
-    installed in the image, and their sources.
+    installed in the image, and their sources. This needs a newer version
+    of vmdebootstrap, 1.7-1+nmu1 or higher, to add deb-src lines in
+    sources.list
   * Change to how apt-ftparchive is called, so the installer will
     work. This was part of the cause of #865015
   * Tweak the size of the isolinux menu so long menus will display
