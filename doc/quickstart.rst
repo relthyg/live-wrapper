@@ -69,27 +69,36 @@ By default this is set to ``http://deb.debian.org/debian``
 Customising Packages
 ~~~~~~~~~~~~~~~~~~~~
 
-There are two methods of specifying extra packages to be installed into the
-live image: the ``-t`` and the ``-e`` paramaters. The difference between these
-two parameters is that the list of tasks given to ``-e`` is passed to
-``debootstrap`` for installation as part of the initial root filesystem
-creation, whereas the packages passed to ``-t`` are installed as part of the
-``vmdebootstrap`` hook.
+There are several methods for specifying extra packages to be
+installed into the live image:
 
-This essentially means that any packages installed using ``-e`` will *not* have
-their "Recommends" installed, but will have their "Depends" installed while
-packages installed using ``-t`` will have both installed making ``-t`` the
-suitable place for the installation of task packages.
+ * ``-t`` / ``--tasks`` should be used to give a list of **task**
+   packages to be included in the image. These will be installed as
+   part of the ``vmdebootstrap`` hook, so all their "Depends" and
+   "Recommends" will be installed too.
 
-There is no reason you cannot pass your entire package list to ``-t``, these
-are seperated mainly to help with the readability of parameters passed to
-live-wrapper.
+ * ``-e`` / ``--extra`` allows for a list of extra non-task packages
+   to be installed, again with all their "Depends" and "Recommends"
+   included.
+
+ * ``-f`` / ``--firmware`` allows for a list of firmware packages to
+   be installed in the image, again with all their "Depends" and
+   "Recommends" included. **Also** each of these packages will be
+   downloaded and saved into the image so that an included installer
+   will automatically find them for installation. **BEWARE** that
+   using this option is likely to mean your image will include
+   non-free software. Check the licensing carefully before
+   distributing it.
 
 For example:
 
 .. code-block:: shell
 
  sudo lwr -e vim -t science-typesetting
+
+.. code-block:: shell
+
+ sudo lwr -e "emacs25 jed" -t live-task-xfce -f "firmware-iwlwifi firmware-realtek"
 
 Testing the Image with QEMU
 ---------------------------

@@ -6,6 +6,8 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
     configured inside the image), and change the default to use
     deb.debian.org. Also switch the default build apt source to use
     deb.debian.org
+  * Add command-line config for addition of firmware packages, and update
+    the docs about Customising Packages
 
  -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
 
