@@ -55,6 +55,17 @@ to change the mirror you're using to create the image. You can do this with the
 
  sudo lwr -m http://localhost/debian/
 
+You may also configure the mirror that will be configured *inside* the
+image. This will be used for any extra packages that are specified,
+and will also be the mirror that the image will use after the build is
+complete. Change this with the ``--apt-mirror`` parameter:
+
+.. code-block:: shell
+
+ sudo lwr -m http://localhost/debian/ --apt-mirror http://deb.debian.org/debian
+
+By default this is set to ``http://deb.debian.org/debian``
+
 Customising Packages
 ~~~~~~~~~~~~~~~~~~~~
 

@@ -1,3 +1,14 @@
+live-wrapper (0.7) UNRELEASED; urgency=medium
+
+  * Add contrib and non-free components to apt config. Needed to allow for
+    building for images including firmware.
+  * Add command-line config for the apt-mirror (the mirror to be
+    configured inside the image), and change the default to use
+    deb.debian.org. Also switch the default build apt source to use
+    deb.debian.org
+
+ -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
+
 live-wrapper (0.6+nmu2) unstable; urgency=medium
 
   * Non-maintainer upload.
