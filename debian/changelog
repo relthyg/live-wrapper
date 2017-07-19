@@ -10,6 +10,10 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
     the docs about Customising Packages
   * In the standard customise script, generate lists of the packages
     installed in the image, and their sources.
+  * Change to how apt-ftparchive is called, so the installer will
+    work. This was the cause of #865015
+  * Tweak the size of the isolinux menu so long menus will display
+    better. This was the cause of #861421
 
  -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
 
