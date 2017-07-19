@@ -16,6 +16,8 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
     better. This was the cause of #861421
   * Add support for specifying the Volume ID of the output image.
     Closes: #865384
+  * Set the mode of the ISO root dir to 0755 (rwxr-xr-x).
+    Closes: #865386
 
  -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
 
