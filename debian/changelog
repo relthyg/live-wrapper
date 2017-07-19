@@ -25,6 +25,8 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
     + Generate Packages and Release files separately for debs and udebs
   * Add extra metadata to make d-i happy to install without network
     This was part of the cause of #865015
+  * Fix up the root password in /etc/shadow so that the live installer
+    will set it properly. This is the cause of #866206
 
  -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
 

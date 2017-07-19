@@ -40,6 +40,14 @@ fi
 # Temporary fix for #843983
 chroot ${rootdir} chmod 755 /
 
+# We told vmdebootstrap to lock the root password, which will have set
+# an (encrypted) password field of "!*" in /etc/shadow. That will
+# confuse user-setup-udeb later on such that we won't get a root
+# password set if we do an installation. Quick hack fix for now is to
+# change that. Later on, let's get user-setup-udeb fixed to handle
+# this properly too. This is the cause of #866206
+sed -i '/root/s,!,,g' ${rootdir}/etc/shadow
+
 # Find all the packages included
 export COLUMNS=500
 chroot ${rootdir} dpkg -l | awk '/^ii/ {printf "%s %s\n",$2,$3}' > packages.list
