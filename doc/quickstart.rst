@@ -100,6 +100,25 @@ For example:
 
  sudo lwr -e "emacs25 jed" -t live-task-xfce -f "firmware-iwlwifi firmware-realtek"
 
+Finally, if you want to make a live image that will work as a
+standalone source for installation you will need to specify a list of
+"base" packages. This is the list of packages that will need to be
+installed *after* the contents of the live image is copied to the new
+system. This is essentially a list of bootloader packages and a few
+utility packages that they use. Specify this list with the
+``--base_debs`` parameter. For example, this is the list needed for
+Debian Stretch on amd64:
+
+.. code-block:: shell
+
+  sudo lwr --base_debs "eject pciutils usbutils \
+                        keyboard-configuration console-setup \
+			grub-efi-amd64 grub-efi-amd64-bin grub-pc"
+
+The customise script also has a part to play in this area, to ensure
+that all the needed dependencies for these packages are also added to
+the image.
+
 Setting the Volume ID
 ---------------------
 

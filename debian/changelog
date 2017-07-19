@@ -11,13 +11,20 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
   * In the standard customise script, generate lists of the packages
     installed in the image, and their sources.
   * Change to how apt-ftparchive is called, so the installer will
-    work. This was the cause of #865015
+    work. This was part of the cause of #865015
   * Tweak the size of the isolinux menu so long menus will display
     better. This was the cause of #861421
   * Add support for specifying the Volume ID of the output image.
     Closes: #865384
   * Set the mode of the ISO root dir to 0755 (rwxr-xr-x).
     Closes: #865386
+  * Tweaks to the code for handling extra debs and udebs
+    + Separate downloading and creating metadata files
+    + Match the pool dir layout from the Debian archive more closely
+    + Add support for "base" debs
+    + Generate Packages and Release files separately for debs and udebs
+  * Add extra metadata to make d-i happy to install without network
+    This was part of the cause of #865015
 
  -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
 
