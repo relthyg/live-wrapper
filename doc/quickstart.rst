@@ -100,6 +100,20 @@ For example:
 
  sudo lwr -e "emacs25 jed" -t live-task-xfce -f "firmware-iwlwifi firmware-realtek"
 
+Setting the Volume ID
+---------------------
+
+The Volume ID is the embedded label in the ISO image; this is what
+will be displayed on the desktop when a DVD or USB flash drive
+containing the image is inserted into a computer. The default is
+``DEBIAN LIVE``, or you can change this using the ``--volume_id``
+parameter. There is a 32-character limit for what can be specified
+here. Example:
+
+.. code-block:: shell
+
+  sudo lwr --volume_id "My live image"
+
 Testing the Image with QEMU
 ---------------------------
 
