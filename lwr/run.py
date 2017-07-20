@@ -94,7 +94,8 @@ class LiveWrapper(cliapp.Application):
         self.settings.string(
             ['base_debs'], 'Base packages for the installer',
             metavar='"PKG1 PKG2 ..."',
-            group='Packages')
+            group='Packages',
+            default="")
         self.settings.boolean(
             ['isolinux'], 'Add isolinux bootloader to the image '
             '(default: %default)', default=True, group="Bootloaders")
@@ -301,8 +302,11 @@ class LiveWrapper(cliapp.Application):
 
             # Generate Packages and Release files for the udebs and downloaded debs
             apt_udeb.generate_packages_file('udeb')
-            apt_udeb.generate_packages_file('deb')
-            apt_udeb.merge_pools(['deb', 'udeb'])
+            if len(self.settings['base_debs']) > 1:
+                apt_udeb.generate_packages_file('deb')
+                apt_udeb.merge_pools(['deb', 'udeb'])
+            else:
+                apt_udeb.merge_pools(['udeb'])
             apt_udeb.generate_release_file()
 
             print("... completed generating metadata files")
