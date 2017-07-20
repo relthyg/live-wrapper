@@ -1,6 +1,6 @@
 Source: live-wrapper
 Maintainer: Debian Live <debian-live@lists.debian.org>
-Uploaders: Iain R. Learmonth <irl@debian.org>
+Uploaders: Iain R. Learmonth <irl@debian.org>, Steve McIntyre <93sam@debian.org>
 Section: misc
 Priority: optional
 Build-Depends: debhelper (>= 9),
