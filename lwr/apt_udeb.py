@@ -98,12 +98,8 @@ class AptUdebDownloader(object):
         pkg = self.cache[name]
         if not hasattr(pkg, 'versions'):
             raise cliapp.AppException('%s has no available versions.' % name)
-        if len(pkg.versions) > 1:
-            pkg.version_list.sort(apt_pkg.version_compare) # pylint: disable=no-member
-            version = pkg.version_list[0]
-            print("Multiple versions returned for %s - using newest: %s" % (name, pkg.version_list[0]))
-        else:
-            version = pkg.versions[0]
+        # Pick the highest version of the package, in case there are >1
+        version = max(pkg.versions)
         if not version.uri:
             raise cliapp.AppException('Not able to download %s' % name)
         try:
@@ -117,80 +113,55 @@ class AptUdebDownloader(object):
             return filename
         return None
 
-
-    def download_udebs(self, exclude_list):
+    def download_apt_file(self, pkg_name, pool_dir, fatal):
         if not self.cache:
             raise cliapp.AppException('No cache available.')
+        pkg = self.cache[pkg_name]
+        if not hasattr(pkg, 'versions'):
+            if fatal:
+                raise cliapp.AppException('%s has no available versions.' % pkg_name)
+            return
+        # Pick the highest version of the package, in case there are >1
+        version = max(pkg.versions)
+        if not version.uri:
+            if fatal:
+                raise cliapp.AppException('Not able to download %s' % pkg_name)
+            return
+        prefix = version.source_name[0]
+        # pool_dir is just a base, need to add main/[index]/[name]
+        if version.source_name[:3] == 'lib':
+            prefix = version.source_name[:4]
+        pkg_dir = os.path.join(pool_dir, prefix, version.source_name)
+        if not os.path.exists(pkg_dir):
+            os.makedirs(pkg_dir)
+        try:
+            version.fetch_binary(destdir=pkg_dir)
+        except TypeError as exc:
+            return
+        except apt.package.FetchError as exc:
+            raise cliapp.AppException('Unable to fetch %s: %s' % (pkg_name, exc))
+
+    def download_udebs(self, exclude_list):
         # HACK HACK HACK
-        #
         # Setting up a separate pool for udebs, as apt-ftparchive
         # isn't generating separate Packages files
-        main_pool = os.path.join(self.destdir, '..', 'udeb', 'pool', 'main')
-        if not os.path.exists(main_pool):
-            os.makedirs(main_pool)
+        pool_dir = os.path.join(self.destdir, '..', 'udeb', 'pool', 'main')
+        if not os.path.exists(pool_dir):
+            os.makedirs(pool_dir)
         for pkg_name in self.cache.keys():
             if pkg_name in exclude_list:
                 continue
-            pkg = self.cache[pkg_name]
-            if not hasattr(pkg, 'versions'):
-                continue
-            if len(pkg.versions) > 1:
-                pkg.version_list.sort(apt_pkg.version_compare) # pylint: disable=no-member
-                version = pkg.version_list[0]
-                print("Multiple versions returned for %s - using newest: %s" % (pkg_name, pkg.version_list[0]))
-            else:
-                version = pkg.versions[0]
-            if not version.uri:
-                continue
-            prefix = version.source_name[0]
-            # destdir is just a base, needs pool/main/[index]/[name]
-            if version.source_name[:3] == 'lib':
-                prefix = version.source_name[:4]
-            pkg_dir = os.path.join(main_pool, prefix, version.source_name)
-            if not os.path.exists(pkg_dir):
-                os.makedirs(pkg_dir)
-            try:
-                version.fetch_binary(destdir=pkg_dir)
-            except TypeError as exc:
-                continue
-            except apt.package.FetchError as exc:
-                raise cliapp.AppException('Unable to fetch %s: %s' % (pkg_name, exc))
+            self.download_apt_file(pkg_name, pool_dir, False)
 
     def download_base_debs(self, pkg_list):
-        if not self.cache:
-            raise cliapp.AppException('No cache available.')
         # HACK HACK HACK
-        #
         # Setting up a separate pool for debs, as apt-ftparchive
         # isn't generating separate Packages files
-        main_pool = os.path.join(self.destdir, '..', 'deb', 'pool', 'main')
-        if not os.path.exists(main_pool):
-            os.makedirs(main_pool)
+        pool_dir = os.path.join(self.destdir, '..', 'deb', 'pool', 'main')
+        if not os.path.exists(pool_dir):
+            os.makedirs(pool_dir)
         for pkg_name in pkg_list:
-            pkg = self.cache[pkg_name]
-            if not hasattr(pkg, 'versions'):
-                continue
-            if len(pkg.versions) > 1:
-                pkg.version_list.sort(apt_pkg.version_compare) # pylint: disable=no-member
-                version = pkg.version_list[0]
-                print("Multiple versions returned for %s - using newest: %s" % (pkg_name, pkg.version_list[0]))
-            else:
-                version = pkg.versions[0]
-            if not version.uri:
-                continue
-            prefix = version.source_name[0]
-            # destdir is just a base, needs pool/main/[index]/[name]
-            if version.source_name[:3] == 'lib':
-                prefix = version.source_name[:4]
-            pkg_dir = os.path.join(main_pool, prefix, version.source_name)
-            if not os.path.exists(pkg_dir):
-                os.makedirs(pkg_dir)
-            try:
-                version.fetch_binary(destdir=pkg_dir)
-            except TypeError as exc:
-                continue
-            except apt.package.FetchError as exc:
-                raise cliapp.AppException('Unable to fetch %s: %s' % (pkg_name, exc))
+            self.download_apt_file(pkg_name, pool_dir, True)
 
     def generate_packages_file(self, style='udeb'):
 	meta_dir = os.path.normpath(os.path.join(self.destdir, '..', 'dists',
