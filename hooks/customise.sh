@@ -26,12 +26,12 @@ done
 
 chroot ${rootdir} apt-get -q -y install initramfs-tools live-boot live-config ${LWR_TASK_PACKAGES} ${LWR_EXTRA_PACKAGES} ${LWR_FIRMWARE_PACKAGES} task-laptop task-english libnss-myhostname >> vmdebootstrap.log 2>&1
 
-# Work out what extra packages we need for the installer to work Need
+# Work out what extra packages we need for the installer to work. Need
 # to run these one at a time, as some of them may conflict if we ask
-# apo to install them all together (e.g. grub-efi-$ARCH and grub-pc)
+# apt to install them all together (e.g. grub-efi-$ARCH and grub-pc)
 if [ "${LWR_BASE_DEBS}"x != ""x ] ; then
     for PKG in ${LWR_BASE_DEBS}; do
-	chroot ${rootdir} apt-get -q -s -u install --reinstall $PKG | awk '/^Inst/ {print $2}' >> base_debs.$PKG.list
+	chroot ${rootdir} apt-get -q -s -u install --reinstall --no-install-recommends $PKG | awk '/^Inst/ {print $2}' >> base_debs.$PKG.list
     done
     sort -u base_debs.*.list > base_debs.list
     rm -f base_debs.*.list
@@ -48,15 +48,18 @@ chroot ${rootdir} chmod 755 /
 # this properly too. This is the cause of #866206
 sed -i '/root/s,!,,g' ${rootdir}/etc/shadow
 
-# Find all the packages included
+# Find all the packages included, including the base_debs
 export COLUMNS=500
 chroot ${rootdir} dpkg -l | awk '/^ii/ {printf "%s %s\n",$2,$3}' > packages.list
 
-# Grab source URLs for all the packages
+# Grab source URLs for all the packages, including base_debs
+if [ -f base_debs.list ]; then
+    BASE_DEBS=$(cat base_debs.list)
+fi
 cat > ${rootdir}//list-sources <<EOF
 #!/bin/sh
 export COLUMNS=500
-for PKG in \$(dpkg -l | awk '/^ii/ {printf "%s ",\$2}'); do
+for PKG in "${BASE_DEBS}" \$(dpkg -l | awk '/^ii/ {printf "%s ",\$2}'); do
     apt-get source -qq --print-uris \$PKG
 done
 EOF
