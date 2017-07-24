@@ -24,7 +24,17 @@ for PKG in ${FIRMWARE_PKGS}; do
 	chroot ${rootdir} debconf-set-selections
 done
 
-chroot ${rootdir} apt-get -q -y install initramfs-tools live-boot live-config ${LWR_TASK_PACKAGES} ${LWR_EXTRA_PACKAGES} ${LWR_FIRMWARE_PACKAGES} task-laptop task-english libnss-myhostname >> vmdebootstrap.log 2>&1
+# Needed to make live stuff work
+CORE_PACKAGES1="initramfs-tools live-boot live-config"
+
+# Extra useful packages
+CORE_PACKAGES2="task-laptop task-english libnss-myhostname"
+
+PACKAGES_WANTED="$CORE_PACKAGES1 ${LWR_TASK_PACKAGES} \
+                 ${LWR_EXTRA_PACKAGES} ${LWR_FIRMWARE_PACKAGES} \
+                 $CORE_PACKAGES2"
+
+chroot ${rootdir} apt-get -q -y install ${PACKAGES_WANTED}  >> vmdebootstrap.log 2>&1
 
 # Work out what extra packages we need for the installer to work. Need
 # to run these one at a time, as some of them may conflict if we ask
