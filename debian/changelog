@@ -31,6 +31,9 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
   * Fix up the root password in /etc/shadow so that the live installer
     will set it properly. This is the cause of #866206
   * Add myself to Uploaders
+  * Fix up usage of python-apt when there is more than one version of a
+    package available.
+  * When using base debs, add them to the sources list too.
 
  -- Steve McIntyre <93sam@debian.org>  Wed, 19 Jul 2017 15:12:45 +0100
 
