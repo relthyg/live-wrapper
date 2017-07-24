@@ -27,10 +27,13 @@ done
 # Needed to make live stuff work
 CORE_PACKAGES1="initramfs-tools live-boot live-config"
 
+# Wanted for braille and speech support, #863177
+ACC_PACKAGES="brltty espeakup alsa-utils"
+
 # Extra useful packages
 CORE_PACKAGES2="task-laptop task-english libnss-myhostname"
 
-PACKAGES_WANTED="$CORE_PACKAGES1 ${LWR_TASK_PACKAGES} \
+PACKAGES_WANTED="$CORE_PACKAGES1 ${ACC_PACKAGES} ${LWR_TASK_PACKAGES} \
                  ${LWR_EXTRA_PACKAGES} ${LWR_FIRMWARE_PACKAGES} \
                  $CORE_PACKAGES2"
 
