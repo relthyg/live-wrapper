@@ -354,19 +354,23 @@ class LiveWrapper(cliapp.Application):
             logging.info("Performing GRUB installation...")
             install_grub(self.cdroot.path, bootconfig) # FIXME: pass architecture & uefi settings.
 
-        # Install .disk information
-        logging.info("Installing the disk metadata ...")
-        install_disk_info(self.cdroot, self.settings['description'] if
-                                       self.settings['description'] else
-                                       get_default_description(self.settings['distribution']))
-
-        # Create ISO image
-        logging.info("Creating the ISO image with Xorriso...")
+        # Start the setup for building the ISO image
         xorriso = Xorriso(self.settings['image_output'],
                           self.settings['volume_id'],
                           isolinux=self.settings['isolinux'],
                           grub=self.settings['grub'])
-        xorriso.build_args(self.cdroot.path)
+        xorriso_args = xorriso.build_args(self.cdroot.path)
+
+        # Install .disk information, including the args we just grabbed
+        logging.info("Installing the disk metadata ...")
+        if not self.settings['description']:
+            self.settings['description'] = get_default_description(self.settings['distribution'])
+        install_disk_info(self.cdroot,
+                              self.settings['description'],
+                              ' '.join(xorriso_args))
+
+        # Create ISO image
+        logging.info("Creating the ISO image with Xorriso...")
         xorriso.build_image()
 
         # Remove the temporary directories

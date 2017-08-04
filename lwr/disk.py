@@ -20,7 +20,7 @@ def get_default_description(distribution):
         return "Unofficial Debian GNU/Linux '%s' Live" % (distribution,)
 
 
-def install_disk_info(cdroot, description):
+def install_disk_info(cdroot, description, xorriso_args):
     """
     This function creates the .disk/ metadata and installs it into the
     specified cdroot.
@@ -38,3 +38,5 @@ def install_disk_info(cdroot, description):
         i.write("")
     with open(os.path.join(metadir, "base_components"), "w") as i:
         i.write("main")
+    with open(os.path.join(metadir, "mkisofs"), "w") as i:
+        i.write(xorriso_args)
