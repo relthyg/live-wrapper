@@ -51,11 +51,11 @@ class BootloaderConfig(object):
         # FIXME: need declarative paths
         self.versions = detect_kernels(self.cdroot)
         self.versions.sort(reverse=True)
-        with open('/usr/share/live-wrapper/languagelist', 'r') as f:
-            lines = f.readlines()
-        lang_lines = [ line for line in lines if not line.startswith('#') ]
+        with open('/usr/share/live-wrapper/languagelist', 'r') as langlist_file:
+            lines = langlist_file.readlines()
+        lang_lines = [line for line in lines if not line.startswith('#')]
         for line in lang_lines:
-            language = line.split(';') 
+            language = line.split(';')
             for version in self.versions:
                 self.entries.append({
                                  'description': '%s (%s)' % (language[1], language[0],),

@@ -40,6 +40,9 @@ live-wrapper (0.7) UNRELEASED; urgency=medium
   * Output the xorriso command line we're using into .disk/mkisofs, just
     like on Debian installer images
 
+  [ Phil Wyett ]
+  * Various fixes for coding standards etc. Closes: #870845
+
  -- Steve McIntyre <93sam@debian.org>  Sat, 05 Aug 2017 14:38:27 -0400
 
 live-wrapper (0.6+nmu2) unstable; urgency=medium
