@@ -12,7 +12,7 @@ Build-Depends: debhelper (>= 9),
                python-setuptools,
                python-sphinx,
                vmdebootstrap (>= 1.7-1+nmu1)
-Standards-Version: 3.9.8
+Standards-Version: 4.0.0
 Vcs-Browser: https://anonscm.debian.org/cgit/debian-live/live-wrapper.git
 Vcs-Git: https://anonscm.debian.org/git/debian-live/live-wrapper.git
 Homepage: https://debian-live.alioth.debian.org/live-wrapper/
@@ -26,7 +26,8 @@ Depends: ${misc:Depends},
          python-distro-info,
          squashfs-tools,
          xorriso
-Suggests: cmdtest
+Suggests: cmdtest,
+          live-wrapper-doc
 Description: Wrapper for vmdebootstrap for creating live images
  live-wrapper is a wrapper around vmdebootstrap to install a live Debian
  system into an ISO image, which can be used by booting from optical media or a
