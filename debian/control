@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 9),
                python-cliapp,
                python-requests,
                python-setuptools,
-               python-sphinx,
+               python-sphinx <!nodoc>,
                vmdebootstrap (>= 1.7-1+nmu1)
 Standards-Version: 4.0.0
 Vcs-Browser: https://salsa.debian.org/live-team/live-wrapper
