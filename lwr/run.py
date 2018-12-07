@@ -322,7 +322,7 @@ class LiveWrapper(cliapp.Application):
                                       self.settings['mirror'],
                                       self.settings['distribution'],
                                       self.settings['architecture'])
-            for pkg in self.settings['firmware'].split(' '):
+            for pkg in self.settings['firmware'].split():
                 filename = handler.download_package(pkg, fw_root)
             handler.clean_up_apt()
             logging.info("... firmware deb downloads")
