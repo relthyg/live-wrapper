@@ -3,7 +3,7 @@ live-wrapper (0.8) unstable; urgency=medium
   [ Steve McIntyre ]
   * Add "-padding 0" to the xorriso command line to remove padding in the
     ISO image, as suggested by Thomas Schmitt.
-  * Add -compliance no_emul_toc to the xorriso comand line, as suggested
+  * Add -compliance no_emul_toc to the xorriso command line, as suggested
     by Thomas. Closes: #898995
 
   [ Jonathan Carter ]
