@@ -1,3 +1,6 @@
 
 There should really be a README file.
 
+Maintainers notes:
+
+ * Remember to update VERSION when incrementing package version

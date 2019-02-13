@@ -1,18 +1,20 @@
 Source: live-wrapper
 Maintainer: Debian Live <debian-live@lists.debian.org>
-Uploaders: Iain R. Learmonth <irl@debian.org>, Steve McIntyre <93sam@debian.org>
+Uploaders: Iain R. Learmonth <irl@debian.org>,
+           Steve McIntyre <93sam@debian.org>,
+           Jonathan Carter <jcc@debian.org>
 Section: misc
 Priority: optional
-Build-Depends: debhelper (>= 9),
+Build-Depends: debhelper-compat (= 12),
                dh-python,
                python-all,
                python-apt,
                python-cliapp,
                python-requests,
                python-setuptools,
-               python-sphinx <!nodoc>,
+               python3-sphinx <!nodoc>,
                vmdebootstrap (>= 1.7-1+nmu1)
-Standards-Version: 4.0.0
+Standards-Version: 4.3.0
 Vcs-Browser: https://salsa.debian.org/live-team/live-wrapper
 Vcs-Git: https://salsa.debian.org/live-team/live-wrapper.git
 Homepage: https://debian-live.alioth.debian.org/live-wrapper/

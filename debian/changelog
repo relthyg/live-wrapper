@@ -1,4 +1,4 @@
-live-wrapper (0.8) UNRELEASED; urgency=medium
+live-wrapper (0.8) unstable; urgency=medium
 
   [ Steve McIntyre ]
   * Add "-padding 0" to the xorriso command line to remove padding in the
@@ -6,7 +6,14 @@ live-wrapper (0.8) UNRELEASED; urgency=medium
   * Add -compliance no_emul_toc to the xorriso comand line, as suggested
     by Thomas. Closes: #898995
 
- -- Steve McIntyre <93sam@debian.org>  Fri, 10 Nov 2017 00:09:25 +0000
+  [ Jonathan Carter ]
+  * Add "quiet splash" to cmdline
+  * Update standards version to 4.3.0
+  * Update to debhelper-compat (=12)
+  * Add self to uploaders
+  * Replace python-sphinx with python3-sphinx
+
+ -- Jonathan Carter <jcc@debian.org>  Wed, 13 Feb 2019 15:56:34 +0000
 
 live-wrapper (0.7) unstable; urgency=medium
 

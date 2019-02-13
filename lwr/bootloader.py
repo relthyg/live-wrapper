@@ -22,7 +22,7 @@ class BootloaderConfig(object):
                                  'description': 'Debian GNU/Linux Live (kernel %s)' % (version,),
                                  'type': 'linux',
                                  'kernel': '/live/vmlinuz-%s' % (version,),
-                                 'cmdline': 'boot=live components',
+                                 'cmdline': 'boot=live components splash quiet',
                                  'initrd': '/live/initrd.img-%s' % (version,),
                                 })
 
@@ -61,7 +61,7 @@ class BootloaderConfig(object):
                                  'description': '%s (%s)' % (language[1], language[0],),
                                  'type': 'linux',
                                  'kernel': '/live/vmlinuz-%s' % (version,),
-                                 'cmdline': 'boot=live components locales=%s' % (language[5],),
+                                 'cmdline': 'boot=live components locales=%s quiet splash' % (language[5],),
                                  'initrd': '/live/initrd.img-%s' % (version,),
                                 })
 
