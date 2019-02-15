@@ -30,6 +30,7 @@ from lwr.xorriso import Xorriso
 from lwr.apt_udeb import AptUdebDownloader, get_apt_handler
 from lwr.utils import cdrom_image_url, KERNEL, RAMDISK
 from lwr.cdroot import CDRoot
+from vmdebootstrap.base import runcmd
 
 __version__ = '0.7'
 
@@ -172,6 +173,13 @@ class LiveWrapper(cliapp.Application):
             logging.info("Created GRUB directory at %s" % (self.cdroot['boot']['grub'].path,))
             grub_files = [f for f in info if f.name.startswith('./grub/')]
             info.extractall(members=grub_files, path=bootdir)
+
+            # Copy the grub-efi grub.cfg file into the CD root too -
+            # needed now that we have Secure Boot and there's an
+            # embedded config in the grub binary we're using. Buster onwards
+            efi_path = os.path.join(self.cdroot['EFI'].path)
+            efi_image_path = os.path.join(self.cdroot['boot']['grub']['efi.img'].path)
+            runcmd(['mcopy', '-i', efi_image_path, '-s', '::/efi/*', efi_path])
         info.close()
         os.remove(ditar.name)
 

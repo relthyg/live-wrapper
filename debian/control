@@ -27,6 +27,7 @@ Depends: ${misc:Depends},
          isolinux,
          python-distro-info,
          squashfs-tools,
+         mtools,
          xorriso
 Suggests: cmdtest,
           live-wrapper-doc
