@@ -6,6 +6,13 @@ live-wrapper (0.8) unstable; urgency=medium
   * Add -compliance no_emul_toc to the xorriso command line, as suggested
     by Thomas. Closes: #898995
 
+  [ Chris Lamb ]
+  * Support nodoc build profile.
+  * Call sub-make via $(MAKE) -C, not a subshell
+
+  [ Witold Baryluk ]
+  * Fix splitting of firmare package names
+
   [ Jonathan Carter ]
   * Add "quiet splash" to cmdline
   * Update standards version to 4.3.0
@@ -13,7 +20,7 @@ live-wrapper (0.8) unstable; urgency=medium
   * Add self to uploaders
   * Replace python-sphinx with python3-sphinx
 
- -- Jonathan Carter <jcc@debian.org>  Wed, 13 Feb 2019 15:56:34 +0000
+ -- Steve McIntyre <93sam@debian.org>  Tue, 26 Mar 2019 13:31:28 +0000
 
 live-wrapper (0.7) unstable; urgency=medium
 
