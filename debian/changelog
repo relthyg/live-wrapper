@@ -1,10 +1,17 @@
-live-wrapper (0.8) unstable; urgency=medium
+live-wrapper (0.9) unstable; urgency=medium
+
+  [ Jonathan Carter ]
+  * Add missing 'remove_daemon_block' to customize.sh (Closes: #924000)
 
   [ Steve McIntyre ]
   * Add "-padding 0" to the xorriso command line to remove padding in the
     ISO image, as suggested by Thomas Schmitt.
   * Add -compliance no_emul_toc to the xorriso command line, as suggested
     by Thomas. Closes: #898995
+
+ -- Jonathan Carter <jcc@debian.org>  Tue, 26 Mar 2019 20:13:22 +0200
+
+live-wrapper (0.8) unstable; urgency=medium
 
   [ Chris Lamb ]
   * Support nodoc build profile.

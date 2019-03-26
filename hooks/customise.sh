@@ -82,6 +82,8 @@ rm -f ${rootdir}/list-sources
 
 echo "blacklist bochs-drm" > $rootdir/etc/modprobe.d/qemu-blacklist.conf
 
+remove_daemon_block
+
 replace_apt_source
 
 mv ${rootdir}/etc/resolv.conf ${rootdir}/etc/resolv.conf.bak
